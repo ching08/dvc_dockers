@@ -1,0 +1,7 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+reports/
+junit_result_parser.py
+.cache/
+.dvc_checker

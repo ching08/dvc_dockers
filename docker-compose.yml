@@ -1,0 +1,54 @@
+version: '2'
+services: 
+  consul: 
+    build: ./dvc_consul
+    container_name: consul
+    image: ivh_consul:${TAG}
+    ports:   
+     - "8500:8500" 
+     - "8600:8600/udp"
+     - "8600:8600/tcp"
+  rabbitmq: 
+    build: ./dvc_rabbitmq
+    container_name: rabbitmq
+    depends_on: 
+      - consul
+    extra_hosts:
+      - "dockerhost:${CONSUL}" 
+      - "consul:${CONSUL}"
+    image: ivh_rabbitmq:${TAG}
+    ports: 
+      - "15672:15672"
+      - "5672:5672"
+  couchbase:
+    build: ./dvc_couchbase
+    container_name: couchbase
+    depends_on:
+      - consul
+    extra_hosts:
+      - "dockerhost:${CONSUL}" 
+      - "consul:${CONSUL}"
+    image: ivh_couchbase:${TAG}
+    ports:
+     - "8091-8094:8091-8094"
+     - "11207:11207"
+     - "11210-11211:11210-11211"
+     - "18091-18093:18091-18093" 
+  dvc_checker:
+    build: ./dvc_checker
+    container_name: dvc_checker
+    image: ivh_checker
+    environment:
+      - consul=${CONSUL}
+    depends_on:
+      - consul
+      - rabbitmq
+      - couchbase
+    entrypoint:
+      - pytest
+      - -sv
+      - test.py
+      - --consul=${CONSUL}
+     
+      
+    

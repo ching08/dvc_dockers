@@ -1,0 +1,6 @@
+pytest
+python-consul
+retrying
+termcolor
+# ipdb not working on gg tb
+#ipdb
